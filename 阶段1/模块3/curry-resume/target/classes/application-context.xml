@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        https://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/data/jpa
+        https://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
+
+    <!-- 配置数据库 -->
+    <context:property-placeholder location="classpath:jdbc.properties"/>
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource" primary="true">
+        <property name="driverClassName" value="${jdbc.driver}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+    </bean>
+
+    <!-- 扫描组件 -->
+    <context:component-scan base-package="com.curry">
+        <!-- 排除@controller由springmvc扫描-->
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+
+    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="jpaVendorAdapter" ref="mysqlHibernateVendor"/>
+        <property name="packagesToScan" value="com.curry.entity"/>
+        <property name="jpaProperties">
+            <props>
+                <prop key="hibernate.current_session_context_class">thread</prop>
+                <prop key="hibernate.hbm2ddl.auto">update</prop><!-- validate/update/create -->
+                <prop key="hibernate.show_sql">false</prop>
+                <prop key="hibernate.format_sql">false</prop>
+                <!-- 建表的命名规则 -->
+                <prop key="hibernate.ejb.naming_strategy">org.hibernate.cfg.ImprovedNamingStrategy</prop>
+                <!-- 定义延迟加载-->
+                <prop key="hibernate.enable_lazy_load_no_trans">false</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="mysqlHibernateVendor" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+        <property name="generateDdl" value="true"/>
+        <property name="database" value="MYSQL"/>
+    </bean>
+
+    <jpa:repositories base-package="com.curry.entity"
+                      entity-manager-factory-ref="entityManagerFactory"
+                      transaction-manager-ref="transactionManager"/>
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="entityManagerFactory"/>
+    </bean>
+
+</beans>

@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="curry-mvc-test:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <module>curry-mvc-test</module>
+        <packaging>war</packaging>
+      </options>
+    </properties>
+    <root id="archive" name="curry-mvc-test-1.0-SNAPSHOT.war">
+      <element id="artifact" artifact-name="curry-mvc-test:war exploded" />
+    </root>
+  </artifact>
+</component>
